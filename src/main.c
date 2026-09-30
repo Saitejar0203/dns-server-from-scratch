@@ -10,6 +10,10 @@ static void put16(uint8_t *out, uint16_t value) {
     out[0] = (uint8_t)(value >> 8); out[1] = (uint8_t)value;
 }
 
+static uint16_t get16(const uint8_t *in) {
+    return (uint16_t)((uint16_t)in[0] << 8 | in[1]);
+}
+
 int main(void) {
     int fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (fd < 0) { perror("socket"); return 1; }
@@ -27,9 +31,12 @@ int main(void) {
         ssize_t received = recvfrom(fd, request, sizeof(request), 0,
                                     (struct sockaddr *)&client, &client_len);
         if (received < 0) { if (errno == EINTR) continue; perror("recvfrom"); break; }
+        if (received < 12) continue;
         size_t response_len = 12;
-        put16(response, 1234);
-        put16(response + 2, 0x8000);
+        put16(response, get16(request));
+        uint16_t query_flags = get16(request + 2);
+        uint16_t opcode = query_flags & 0x7800;
+        put16(response + 2, 0x8000 | opcode | (query_flags & 0x0100) | (opcode ? 4 : 0));
         static const uint8_t name[] = {12, 'c','o','d','e','c','r','a','f','t','e','r','s',2,'i','o',0};
         put16(response + 4, 1);
         memcpy(response + response_len, name, sizeof(name)); response_len += sizeof(name);
