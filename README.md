@@ -1,10 +1,10 @@
 # DNS Server from Scratch
 
-I am building a DNS server in Python from scratch to deepen my understanding of networking and computer science fundamentals, so I can become better at building systems.
+I am building a DNS server in C from scratch to deepen my understanding of networking, memory, and computer science fundamentals so I can become better at building systems.
 
-[![progress-banner](https://backend.codecrafters.io/progress/dns-server/14d25d13-5a0d-4550-933b-a371606d3b7b)](https://app.codecrafters.io/users/Saitejar0203?r=2qF)
+[![progress-banner](https://backend.codecrafters.io/progress/dns-server/7ba68edb-607d-4eec-8192-614cb5ba8504)](https://app.codecrafters.io/users/Saitejar0203?r=2qF)
 
-This is a starting point for Python solutions to the
+This is a starting point for C solutions to the
 ["Build Your Own DNS server" Challenge](https://app.codecrafters.io/courses/dns-server/overview).
 
 In this challenge, you'll build a DNS server that's capable of parsing and
@@ -18,7 +18,7 @@ various record types (A, AAAA, CNAME, etc) and more.
 
 # Passing the first stage
 
-The entry point for your `your_program.sh` implementation is in `app/main.py`.
+The entry point for your `your_program.sh` implementation is in `src/main.c`.
 Study and uncomment the relevant code, and then run the command below to execute
 the tests on our servers:
 
@@ -32,8 +32,8 @@ Time to move on to the next stage!
 
 Note: This section is for stages 2 and beyond.
 
-1. Ensure you have `uv` installed locally
+1. Ensure you have `cmake` installed locally
 1. Run `./your_program.sh` to run your program, which is implemented in
-   `app/main.py`.
+   `src/main.c`.
 1. Run `codecrafters submit` to submit your solution to CodeCrafters. Test
    output will be streamed to your terminal.

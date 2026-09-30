@@ -8,4 +8,5 @@
 
 set -e # Exit on failure
 
-# (This file is empty since Python programs don't use a compile step)
+cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake
+cmake --build ./build
