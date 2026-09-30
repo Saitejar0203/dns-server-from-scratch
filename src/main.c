@@ -26,13 +26,24 @@ typedef struct {
 /* Decode a label sequence, advancing the caller past its on-wire bytes. */
 static int read_name(const uint8_t *packet, size_t length, size_t *offset,
                      uint8_t *name, size_t *name_len) {
-    size_t pos = *offset, used = 0;
-    while (pos < length) {
+    size_t pos = *offset, used = 0, consumed = 0;
+    int jumped = 0;
+    /* At most one step per packet byte prevents cyclic pointer chains. */
+    for (size_t steps = 0; steps < length && pos < length; steps++) {
         uint8_t label = packet[pos++];
+        if ((label & 0xc0) == 0xc0) {
+            if (pos >= length) return -1;
+            size_t target = ((size_t)(label & 0x3f) << 8) | packet[pos++];
+            if (target >= length) return -1;
+            if (!jumped) consumed = pos;
+            jumped = 1; pos = target; continue;
+        }
         if (label > 63 || used + 1 + label > MAX_NAME || pos + label > length) return -1;
         name[used++] = label;
         memcpy(name + used, packet + pos, label); used += label; pos += label;
-        if (label == 0) { *offset = pos; *name_len = used; return 0; }
+        if (label == 0) {
+            *offset = jumped ? consumed : pos; *name_len = used; return 0;
+        }
     }
     return -1;
 }
