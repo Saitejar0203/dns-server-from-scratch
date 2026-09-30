@@ -35,6 +35,13 @@ int main(void) {
         memcpy(response + response_len, name, sizeof(name)); response_len += sizeof(name);
         put16(response + response_len, 1); response_len += 2;
         put16(response + response_len, 1); response_len += 2;
+        put16(response + 6, 1);
+        memcpy(response + response_len, name, sizeof(name)); response_len += sizeof(name);
+        put16(response + response_len, 1); response_len += 2;
+        put16(response + response_len, 1); response_len += 2;
+        response[response_len + 3] = 60; response_len += 4;
+        put16(response + response_len, 4); response_len += 2;
+        memset(response + response_len, 8, 4); response_len += 4;
         if (sendto(fd, response, response_len, 0, (struct sockaddr *)&client, client_len) < 0)
             perror("sendto");
     }
