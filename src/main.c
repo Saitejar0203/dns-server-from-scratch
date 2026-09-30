@@ -6,6 +6,10 @@
 #include <netinet/in.h>
 #include <unistd.h>
 
+static void put16(uint8_t *out, uint16_t value) {
+    out[0] = (uint8_t)(value >> 8); out[1] = (uint8_t)value;
+}
+
 int main(void) {
     int fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (fd < 0) { perror("socket"); return 1; }
@@ -23,7 +27,9 @@ int main(void) {
         ssize_t received = recvfrom(fd, request, sizeof(request), 0,
                                     (struct sockaddr *)&client, &client_len);
         if (received < 0) { if (errno == EINTR) continue; perror("recvfrom"); break; }
-        size_t response_len = 0;
+        size_t response_len = 12;
+        put16(response, 1234);
+        put16(response + 2, 0x8000);
         if (sendto(fd, response, response_len, 0, (struct sockaddr *)&client, client_len) < 0)
             perror("sendto");
     }
