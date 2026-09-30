@@ -2,38 +2,40 @@
 
 I am building a DNS server in C from scratch to deepen my understanding of networking, memory, and computer science fundamentals so I can become better at building systems.
 
-[![progress-banner](https://backend.codecrafters.io/progress/dns-server/7ba68edb-607d-4eec-8192-614cb5ba8504)](https://app.codecrafters.io/users/Saitejar0203?r=2qF)
+[![progress-banner](https://backend.codecrafters.io/progress/dns-server/7ba68edb-607d-4eec-8192-614cb5ba8504)](https://app.codecrafters.io/users/Saitejar0203)
 
-This is a starting point for C solutions to the
-["Build Your Own DNS server" Challenge](https://app.codecrafters.io/courses/dns-server/overview).
+All eight stages of the [CodeCrafters DNS challenge](https://app.codecrafters.io/courses/dns-server/overview) are complete. Each stage has its own implementation commit: UDP listener, header encoding, question encoding, answer encoding, header parsing, question parsing, compressed names, and forwarding.
 
-In this challenge, you'll build a DNS server that's capable of parsing and
-creating DNS packets, responding to DNS queries, handling various record types
-and doing recursive resolve. Along the way we'll learn about the DNS protocol,
-DNS packet format, root servers, authoritative servers, forwarding servers,
-various record types (A, AAAA, CNAME, etc) and more.
+## Run
 
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
-
-# Passing the first stage
-
-The entry point for your `your_program.sh` implementation is in `src/main.c`.
-Study and uncomment the relevant code, and then run the command below to execute
-the tests on our servers:
+Requires a C23 compiler and CMake 3.13 or later. No external C libraries are needed.
 
 ```sh
+./your_program.sh
+# Forward queries to an existing DNS resolver instead of returning the demo address:
+./your_program.sh --resolver 1.1.1.1:53
+```
+
+The server listens on UDP port 2053. Without `--resolver`, it returns the demonstration IPv4 address `8.8.8.8`. In forwarding mode it splits multiple questions into separate upstream queries and merges the returned A records, preserving record values and TTLs.
+
+```sh
+dig @127.0.0.1 -p 2053 example.com A +noedns
+```
+
+On a Mac where Git or the compiler selects an unconfigured Xcode installation, prefix commands with `DEVELOPER_DIR=/Library/Developer/CommandLineTools`.
+
+## Verify
+
+The integration tests use Python's standard library as a UDP client and controlled resolver; the server itself is C.
+
+```sh
+cmake -S . -B build
+cmake --build build
+python3 tests/test_packets.py compression
+python3 tests/test_forwarding.py
 codecrafters submit
 ```
 
-Time to move on to the next stage!
+Tests cover variable names, compressed suffixes, malformed pointers, independent upstream queries, compressed upstream responses, and merged records. The C code was also checked with address and undefined-behavior sanitizers.
 
-# Stage 2 & beyond
-
-Note: This section is for stages 2 and beyond.
-
-1. Ensure you have `cmake` installed locally
-1. Run `./your_program.sh` to run your program, which is implemented in
-   `src/main.c`.
-1. Run `codecrafters submit` to submit your solution to CodeCrafters. Test
-   output will be streamed to your terminal.
+This is a learning implementation for IPv4 A records: a single-threaded UDP loop, up to 16 questions and 4096-byte packets, with a two-second upstream receive timeout. It does not implement TCP fallback, caching, DNSSEC, or a full recursive resolver. The earlier Python starter is preserved locally and in Git history; C is the maintained implementation.
