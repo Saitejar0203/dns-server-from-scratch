@@ -30,6 +30,11 @@ int main(void) {
         size_t response_len = 12;
         put16(response, 1234);
         put16(response + 2, 0x8000);
+        static const uint8_t name[] = {12, 'c','o','d','e','c','r','a','f','t','e','r','s',2,'i','o',0};
+        put16(response + 4, 1);
+        memcpy(response + response_len, name, sizeof(name)); response_len += sizeof(name);
+        put16(response + response_len, 1); response_len += 2;
+        put16(response + response_len, 1); response_len += 2;
         if (sendto(fd, response, response_len, 0, (struct sockaddr *)&client, client_len) < 0)
             perror("sendto");
     }
