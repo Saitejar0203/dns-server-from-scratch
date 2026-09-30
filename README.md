@@ -1,3 +1,7 @@
+# DNS Server from Scratch
+
+I am building a DNS server in Python from scratch to deepen my understanding of networking and computer science fundamentals, so I can become better at building systems.
+
 [![progress-banner](https://backend.codecrafters.io/progress/dns-server/14d25d13-5a0d-4550-933b-a371606d3b7b)](https://app.codecrafters.io/users/Saitejar0203?r=2qF)
 
 This is a starting point for Python solutions to the
